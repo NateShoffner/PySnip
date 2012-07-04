@@ -29,6 +29,7 @@ cdef extern from "vxl_c.cpp":
 
 cdef class VXLData:
     cdef MapData * map
+    cdef public int crc
     
     cpdef get_solid(self, int x, int y, int z)
     cpdef get_color(self, int x, int y, int z)

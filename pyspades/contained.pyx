@@ -101,25 +101,27 @@ cdef class WorldUpdate(Loader):
     id = id_iter.next()
     
     cdef public:
-        list items
+        dict items
     
     cpdef read(self, ByteReader reader):
-        cdef list items = []
+        cdef dict items = {}
         self.items = items
-        for _ in range(32):
+        while reader.data_left():
+            p_id = reader.readByte(True)
             p_x = reader.readFloat(False)
             p_y = reader.readFloat(False)
             p_z = reader.readFloat(False)
             o_x = reader.readFloat(False)
             o_y = reader.readFloat(False)
             o_z = reader.readFloat(False)
-            items.append(((p_x, p_y, p_z), (o_x, o_y, o_z)))
+            items[p_id] = ((p_x, p_y, p_z), (o_x, o_y, o_z))
     
     cpdef write(self, ByteWriter reader):
         reader.writeByte(self.id, True)
         cdef tuple item
-        for item in self.items:
+        for player_id, item in self.items.iteritems():
             (p_x, p_y, p_z), (o_x, o_y, o_z) = item
+            reader.writeByte(player_id, True)
             reader.writeFloat(p_x, False)
             reader.writeFloat(p_y, False)
             reader.writeFloat(p_z, False)
@@ -623,14 +625,19 @@ cdef class MapStart(Loader):
     id = id_iter.next()
     
     cdef public:
-        unsigned int size
+        int size, crc
+        object name
     
     cpdef read(self, ByteReader reader):
         self.size = reader.readInt(True, False)
+        self.crc = reader.readInt(True, True)
+        self.name = decode(reader.readString()) 
     
     cpdef write(self, ByteWriter reader):
         reader.writeByte(self.id, True)
         reader.writeInt(self.size, True, False)
+        reader.writeInt(self.crc, True, True)
+        reader.writeString(encode(self.name)) 
 
 cdef class MapChunk(Loader):
     id = id_iter.next()
@@ -813,3 +820,16 @@ cdef class ChangeWeapon(Loader):
         reader.writeByte(self.id, True)
         reader.writeByte(self.player_id, True)
         reader.writeByte(self.weapon, True)
+        
+cdef class MapCached(Loader):
+    id = id_iter.next()
+    
+    cdef public:
+        int cached
+
+    cpdef read(self, ByteReader reader):
+        self.cached = reader.readByte(True)
+    
+    cpdef write(self, ByteWriter reader):
+        reader.writeByte(self.id, True)
+        reader.writeByte(self.cached, True)

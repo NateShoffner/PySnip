@@ -58,17 +58,22 @@ cdef class VXLData:
         if fp is not None:
             data = fp.read()
             c_data = data
+            import zlib
+            crc = zlib.crc32(data) #& 0x7fffffff
+            self.crc = crc
+            print " CRC: ", self.crc, " LEN: ", data.__len__()
         else:
             c_data = NULL
-        self.map = load_vxl(c_data)
-    
-    def load_vxl(self, c_data = None):
         self.map = load_vxl(c_data)
     
     def copy(self):
         cdef VXLData map = VXLData()
         map.map = copy_map(self.map)
         return map
+    
+    def get_crc(self, data):
+        import zlib
+        return zlib.crc32(data) & 0xffffffff
     
     def get_point(self, int x, int y, int z):
         color = self.get_color(x, y, z)
@@ -255,3 +260,4 @@ cdef class VXLData:
             map = self.map
             self.map = NULL
             delete_vxl(map)
+            

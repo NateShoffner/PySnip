@@ -116,6 +116,9 @@ class RotationInfo(object):
             self.seed = random.randint(0, math.pow(2, 31))
         return self.seed
         
+    def get_map_name(self):
+        return self.name
+        
     def get_map_filename(self, load_dir = DEFAULT_LOAD_DIR):
         return os.path.join(load_dir, '%s.vxl' % self.name)
         
