@@ -1592,7 +1592,8 @@ class ServerProtocol(BaseProtocol):
     def update_network(self):
         items = {}
         for player in self.players.values():
-            if (player.filter_visibility_data or player.team.spectator):
+            if (player.filter_visibility_data or player.team.spectator
+                or player.world_object.dead):
                 continue
             world_object = player.world_object
             items[player.player_id] = (world_object.position.get(),
