@@ -335,6 +335,10 @@ class ServerConnection(BaseConnection):
                             self.on_shoot_set(primary)
                     if world_object.secondary_fire != secondary:
                         self.on_secondary_fire_set(secondary)
+                        weapon = self.weapon_object
+                        if weapon.reloading:
+                            weapon.reloading = False
+                            weapon.reload_call.cancel()
                     world_object.primary_fire = primary
                     world_object.secondary_fire = secondary
                     if self.filter_weapon_input:
