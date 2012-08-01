@@ -738,6 +738,7 @@ class ServerConnection(BaseConnection):
                     world.Character, position, None, self._on_fall)
             self.world_object.dead = False
             self.tool = WEAPON_TOOL
+            self.world_object.set_weapon(1)
             self.refill(True)
             create_player.x = x
             create_player.y = y
@@ -998,7 +999,6 @@ class ServerConnection(BaseConnection):
         packet = enet.Packet(str(state_data.generate()),
             enet.PACKET_FLAG_RELIABLE)
         self.peer.send(0, packet)
-        print "SEND DONE SERVER STATE"
         
     def grenade_exploded(self, grenade):
         if self.name is None or self.team.spectator:
@@ -1070,10 +1070,8 @@ class ServerConnection(BaseConnection):
             map_start.crc = self.protocol.map_info.data.crc
             map_start.name = self.protocol.map_info.rot_info.get_map_name()
             self.send_contained(map_start)
-            print "SEND MAP_START"
             return
         if self.cached is None:
-            print "waiting"
             return
             
         if self.cached is 1 or not self.map_data.data_left():
@@ -1081,7 +1079,6 @@ class ServerConnection(BaseConnection):
             for data in self.saved_loaders:
                 packet = enet.Packet(str(data), enet.PACKET_FLAG_RELIABLE)
                 self.peer.send(0, packet)
-                print "SEND CONNECTIONS"
             self._send_server_state()
             self.saved_loaders = None
             self.on_join()
@@ -1091,7 +1088,6 @@ class ServerConnection(BaseConnection):
                 break
             map_data.data = self.map_data.read(1024)
             self.send_contained(map_data)
-            print "SEND MAP CHUNK"
     
     def continue_map_transfer(self):
         self.send_map()
@@ -1540,8 +1536,6 @@ class ServerProtocol(BaseProtocol):
                 if save:
                     player.saved_loaders.append(data)
             else:
-                if contained.id != 2:
-                    print contained.id
                 player.peer.send(0, packet)
     
     def reset_tc(self):

@@ -46,8 +46,8 @@ cdef extern from "world_c.cpp":
     struct PlayerType:
         Vector p, e, v, s, h, f
         int mf, mb, ml, mr
-        int jump, crouch, sneak
-        int airborne, wade, alive, sprint
+        int jump, crouch, sneak, sprint
+        int airborne, wade, alive
         int primary_fire, secondary_fire, weapon
         
     struct GrenadeType:
@@ -147,10 +147,10 @@ cdef class Character(Object):
         self.player.p.x = self.player.e.x = x
         self.player.p.y = self.player.e.y = y
         self.player.p.z = self.player.e.z = z
-        if reset:
+        if reset is True:
             self.velocity.set(0.0, 0.0, 0.0)
             self.primary_fire = self.secondary_fire = False 
-            self.jump = self.crouch = False
+            self.jump = self.crouch = self.sneak = self.sprint = False
             self.up = self.down = self.left = self.right = False
         
     def set_orientation(self, x, y, z):
@@ -201,11 +201,12 @@ cdef class Character(Object):
         self.player.mb = False
         self.player.ml = False
         self.player.mr = False
+        self.player.jump = False
         self.player.crouch = False
         self.player.sneak = False
+        self.player.sprint = False
         self.player.primary_fire = False
         self.player.secondary_fire = False
-        self.player.sprint = False
         
     cdef int update(self, double dt) except -1:
         cdef long ret = move_player(self.player)

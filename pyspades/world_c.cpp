@@ -39,7 +39,6 @@
 #define FALL_DAMAGE_VELOCITY 0.58f
 #define FALL_DAMAGE_SCALAR 4096
 #define MINERANGE 3
-#define WEAPON_PRIMARY 1
 
 // common.h
 #define CUBE_ARRAY_LENGTH 64
@@ -563,8 +562,8 @@ long move_player(PlayerType *p)
 		f *= 0.1f;
 	else if(p->crouch)
 		f *= 0.3f;
-	else if((p->secondary_fire && p->weapon == WEAPON_PRIMARY) || p->sneak)
-		f *= 0.5f;
+    else if((p->secondary_fire && p->weapon) || p->sneak)
+        f *= 0.5f;
 	else if(p->sprint)
 		f *= 1.3f;
 
@@ -695,7 +694,8 @@ PlayerType * create_player()
     player->e = player->p;
     player->v.x = player->v.y = player->v.z = 0;
     player->mf = player->mb = player->ml = player->mr = player->jump =
-        player->crouch = player->sneak = 0;
+        player->crouch = player->sneak = player->sprint = 0;
+    player->primary_fire = player->secondary_fire = 0;
     player->airborne = player->wade = 0;
     player->lastclimb = 0;
     player->alive = 1;

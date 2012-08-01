@@ -111,13 +111,11 @@ class ClientConnection(BaseConnection):
                 # raw_input('not completely parsed')
             # print contained.id
             if contained.id == loaders.MapStart.id:
-                print 'map size:', contained.size
                 self.map_size = contained.size
                 self.map = ByteWriter()
             elif contained.id == loaders.MapChunk.id:
                 self.map.write(contained.data)
                 if len(self.map) == self.map_size:
-                    print 'done!', len(self.map)
             # newdata = ByteWriter()
             # contained.write(newdata)
             # if contained.id != loaders.PlayerData.id:

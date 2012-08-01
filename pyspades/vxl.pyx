@@ -61,7 +61,6 @@ cdef class VXLData:
             import zlib
             crc = zlib.crc32(data) #& 0x7fffffff
             self.crc = crc
-            print " CRC: ", self.crc, " LEN: ", data.__len__()
         else:
             c_data = NULL
         self.map = load_vxl(c_data)
