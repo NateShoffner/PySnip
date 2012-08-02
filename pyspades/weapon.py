@@ -89,20 +89,20 @@ class BaseWeapon(object):
         return self.get_ammo(True) < -tolerance or not self.shoot
     
     def get_damage(self, value, position1, position2):
-        falloff = 1 - ((distance_3d_vector(position1, position2)**2)*0.00003)
+        falloff = 1 - ((distance_3d_vector(position1, position2)**1.5)*0.0004)
         return math.ceil(self.damage[value] * falloff)
 
 class Rifle(BaseWeapon):
     name = 'Rifle'
-    delay = 0.8
-    ammo = 5
-    stock = 40
+    delay = 0.6
+    ammo = 8
+    stock = 48
     reload_time = 2.5
     slow_reload = False
     
     damage = {
-        TORSO : 75,
-        HEAD : 200,
+        TORSO : 60,
+        HEAD : 180,
         ARMS : 50,
         LEGS : 50
     }
@@ -126,7 +126,7 @@ class Shotgun(BaseWeapon):
     name = 'Shotgun'
     delay = 0.8
     ammo = 8
-    stock = 56
+    stock = 48
     reload_time = 0.4
     slow_reload = True
     
