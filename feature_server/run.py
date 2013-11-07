@@ -174,7 +174,8 @@ class FeatureConnection(ServerConnection):
         self.printable_name = name.encode('ascii', 'replace')
         print '%s (IP %s, ID %s) entered the game!' % (self.printable_name, 
             self.address[0], self.player_id)
-        self.protocol.irc_say('* %s entered the game' % self.name)
+        self.protocol.irc_say('* %s (IP %s, ID %s) entered the game!' % 
+            (self.name, self.address[0], self.player_id))
         if self.user_types is None:
             self.user_types = AttributeSet()
             self.rights = AttributeSet()
@@ -192,7 +193,8 @@ class FeatureConnection(ServerConnection):
     def on_disconnect(self):
         if self.name is not None:
             print self.printable_name, 'disconnected!'
-            self.protocol.irc_say('* %s disconnected' % self.name)
+            self.protocol.irc_say('* %s (IP %s) disconnected' % 
+                (self.name, self.address[0]))
             self.protocol.player_memory.append((self.name, self.address[0]))
         else:
             print '%s disconnected' % self.address[0]
@@ -719,7 +721,7 @@ class FeatureProtocol(ServerProtocol):
         else:
             self.send_chat('%s Next map: %s.' % (message, map.full_name),
                            irc = True)
-            reactor.callLater(5, self.set_map_name, map)
+            reactor.callLater(10, self.set_map_name, map)
     
     def get_mode_name(self):
         return self.game_mode_name
@@ -787,7 +789,8 @@ class FeatureProtocol(ServerProtocol):
         format_dict = {
             'map_name' : map.name,
             'map_author' : map.author,
-            'map_description' : map.description
+            'map_description' : map.description,
+            'game_mode' : self.get_mode_name()
         }
         format_dict.update(extra)
         return value % format_dict
@@ -812,8 +815,8 @@ class FeatureProtocol(ServerProtocol):
                 message = 'Master connection could not be established'
             else:
                 message = 'Master connection lost'
-            print '%s, reconnecting in 20 seconds...' % message
-            self.master_reconnect_call = reactor.callLater(20, 
+            print '%s, reconnecting in 60 seconds...' % message
+            self.master_reconnect_call = reactor.callLater(60, 
                 self.reconnect_master)
     
     def reconnect_master(self):

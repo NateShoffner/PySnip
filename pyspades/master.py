@@ -33,7 +33,7 @@ MAX_SERVER_NAME_SIZE = 31
 MAX_MAP_NAME_SIZE = 20
 MAX_GAME_MODE_SIZE = 7
 
-HOST = '184.172.204.137'
+HOST = 'master.buildandshoot.com'
 
 if STAGING:
     PORT = 32885
@@ -102,7 +102,7 @@ class MasterConnection(BaseConnection):
 
 from pyspades.web import getPage
 
-IP_GETTER = 'http://automation.whatismyip.com/n09230945.asp'
+IP_GETTER = 'http://services.buildandshoot.com/getip'
 
 def get_external_ip(interface = ''):
     return getPage(IP_GETTER, bindAddress = (interface, 0))
