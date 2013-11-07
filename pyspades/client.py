@@ -116,6 +116,7 @@ class ClientConnection(BaseConnection):
             elif contained.id == loaders.MapChunk.id:
                 self.map.write(contained.data)
                 if len(self.map) == self.map_size:
+                    print 'done!', len(self.map)
             # newdata = ByteWriter()
             # contained.write(newdata)
             # if contained.id != loaders.PlayerData.id:
