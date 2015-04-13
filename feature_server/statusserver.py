@@ -19,7 +19,7 @@ from twisted.internet import reactor
 from twisted.web import server
 from twisted.web.resource import Resource
 from string import Template
-import Image
+from PIL import Image
 from jinja2 import Environment, PackageLoader
 import json
 from cStringIO import StringIO
@@ -98,6 +98,12 @@ class StatusServerFactory(object):
         root.putChild('', StatusPage(self))
         root.putChild('overview', MapOverview(self))
         site = server.Site(root)
+
+        logging = config.get('logging', False)
+        site.noisy = logging
+        if not logging:
+            site.log = lambda _: None
+
         protocol.listenTCP(config.get('port', 32886), site)
     
     def get_overview(self):

@@ -1,2 +1,4 @@
+#!/bin/sh
+
 cd feature_server
-python run.py
+exec python2 run.py "$@"

@@ -1,3 +1,5 @@
-python build.py build_ext --inplace
+#!/bin/sh
+
+python2 build.py build_ext --inplace
 cd enet
-python setup.py build_ext --inplace
+python2 setup.py build_ext --inplace
