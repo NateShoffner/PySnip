@@ -24,8 +24,10 @@ import sys
 import os
 sys.path.append('../../')
 
+import re
 import math
 import subprocess
+from collections import OrderedDict
 from PySide import QtGui, QtCore
 from PySide.QtCore import Qt
 from PySide.QtGui import QPainter
@@ -352,10 +354,17 @@ class Texture(Tool):
             y - self.image.height() / 2.0, 
             self.image)
 
-TOOLS = {
-    'Brush' : Brush,
-    'Texture' : Texture
-}
+class Replace(Tool):
+    def draw(self, painter, old_x, old_y, x, y):
+        image = self.editor.image
+        color = struct.pack('I', self.editor.current_color.rgba())
+        target_color = struct.pack('I', image.pixel(x, y))
+        translate_color(image, color, target_color)
+
+TOOLS = OrderedDict()
+TOOLS['Brush'] = Brush
+TOOLS['Texture'] = Texture
+TOOLS['Replace color'] = Replace
 
 class Settings(QtGui.QWidget):
     def __init__(self, parent, *arg, **kw):
@@ -406,10 +415,8 @@ class Settings(QtGui.QWidget):
         self.editor.toggle_freeze()
     
     def set_color(self):
-        color = QtGui.QColorDialog.getColor(
-            Qt.white, self, 'Select a color',
-            QtGui.QColorDialog.ShowAlphaChannel
-        )
+        color = QtGui.QColorDialog.getColor(self.editor.color, self,
+            'Select a color', QtGui.QColorDialog.ShowAlphaChannel)
         self.editor.set_color(color)
     
     def update_values(self):
@@ -501,8 +508,15 @@ class MapEditor(QtGui.QMainWindow):
         
         self.file.addSeparator()
         
-        self.voxed_action = QtGui.QAction('Open in &VOXED', 
-            self, shortcut = QtGui.QKeySequence('F5'), triggered = self.open_voxed)
+        self.bake_voxed_action = QtGui.QAction(
+            '&Calculate shadows and open in VOXED', self,
+            shortcut = QtGui.QKeySequence('F5'),
+            triggered = self.bake_shadows_open_voxed)
+        self.file.addAction(self.bake_voxed_action)
+        
+        self.voxed_action = QtGui.QAction('Open in &VOXED', self,
+            shortcut = QtGui.QKeySequence('Shift+F5'),
+            triggered = self.open_voxed)
         self.file.addAction(self.voxed_action)
         
         self.file.addSeparator()
@@ -674,12 +688,14 @@ class MapEditor(QtGui.QMainWindow):
         self.save(name)
         return name
     
-    def save(self, filename):
-        for z in xrange(0, 64):
-            layer = self.layers[z]
+    def update_map(self):
+        for z, layer in enumerate(self.layers):
             if layer.dirty:
                 self.map.set_overview(layer.data, z)
                 layer.dirty = False
+    
+    def save(self, filename):
+        self.update_map()
         open(filename, 'wb').write(self.map.generate())
         self.set_dirty(False)
     
@@ -699,9 +715,15 @@ class MapEditor(QtGui.QMainWindow):
                 self.voxed_filename = exename
         subprocess.call([self.voxed_filename, name])
     
+    def bake_shadows_open_voxed(self):
+        self.update_map()
+        self.map.update_shadows()
+        self.open_voxed()
+    
     def import_image_sequence(self):
         name = QtGui.QFileDialog.getOpenFileName(self,
-            'Import image sequence (select any file from the sequence)', filter = IMAGE_OPEN_FILTER)[0]
+            'Import image sequence (select any file from the sequence)',
+            filter = IMAGE_OPEN_FILTER)[0]
         if not name:
             return
         root, ext = os.path.splitext(name)
@@ -709,7 +731,7 @@ class MapEditor(QtGui.QMainWindow):
         path = os.path.join(root, head, tail[:-2])
         old_z = self.edit_widget.z
         progress = progress_dialog(self.edit_widget, 0, 63, 'Importing images...')
-        for z in xrange(0, 64):
+        for z, layer in enumerate(reversed(self.layers)):
             if progress.wasCanceled():
                 break
             progress.setValue(z)
@@ -717,7 +739,7 @@ class MapEditor(QtGui.QMainWindow):
             if not image:
                 continue
             interpret_colorkey(image)
-            self.layers[63 - z].set_image(image)
+            layer.set_image(image)
         self.edit_widget.repaint()
         self.set_dirty()
     
@@ -735,11 +757,10 @@ class MapEditor(QtGui.QMainWindow):
             for x in xrange(0, 512):
                 height_found[y].append(False)
         progress = progress_dialog(self.edit_widget, 0, 63, 'Exporting Colormap...')
-        for z in xrange(0, 64):
+        for z, image in enumerate(self.layers):
             if progress.wasCanceled():
                 break
             progress.setValue(z)
-            image = self.layers[z]
             for y in xrange(0, 512):
                 image_line = image.scanLine(y)
                 color_line = color_lines[y]
@@ -760,7 +781,8 @@ class MapEditor(QtGui.QMainWindow):
         height_packed = []
         for z in xrange(0, 64):
             height = (63 - z) * 4
-            height_packed.append(struct.pack('I', QtGui.qRgba(height, height, height, 255)))
+            height_packed.append(struct.pack('I',
+                QtGui.qRgba(height, height, height, 255)))
         height_image = QImage(512, 512, QImage.Format_ARGB32)
         height_lines = []
         height_found = []
@@ -770,12 +792,11 @@ class MapEditor(QtGui.QMainWindow):
             for x in xrange(0, 512):
                 height_found[y].append(False)
         progress = progress_dialog(self.edit_widget, 0, 63, 'Exporting Heightmap...')
-        for z in xrange(0, 64):
+        for z, image in enumerate(self.layers):
             if progress.wasCanceled():
                 break
             progress.setValue(z)
             packed_value = height_packed[z]
-            image = self.layers[z]
             for y in xrange(0, 512):
                 image_line = image.scanLine(y)
                 height_line = height_lines[y]
@@ -789,18 +810,20 @@ class MapEditor(QtGui.QMainWindow):
     
     def export_image_sequence(self):
         name = QtGui.QFileDialog.getSaveFileName(self,
-            'Export image sequence (select base filename)', filter = IMAGE_SAVE_FILTER)[0]
+            'Export image sequence (select base filename)',
+            filter = IMAGE_SAVE_FILTER)[0]
         if not name:
             return
         root, ext = os.path.splitext(name)
+        head, tail = os.path.split(root)
+        path = os.path.join(root, head, re.sub('\d{2}$', '', tail))
         progress = progress_dialog(self.edit_widget, 0, 63, 'Exporting images...')
-        for z in xrange(0, 64):
+        for z, image in enumerate(reversed(self.layers)):
             if progress.wasCanceled():
                 break
             progress.setValue(z)
-            image = self.layers[63 - z]
             new_image = make_colorkey(image)
-            new_image.save(root + format(z, '02d') + ext)
+            new_image.save(path + format(z, '02d') + ext)
     
     def copy_selected(self):
         self.clipboard.setImage(self.edit_widget.image)
@@ -828,11 +851,10 @@ class MapEditor(QtGui.QMainWindow):
     
     def mirror(self, hor, ver):
         progress = progress_dialog(self.edit_widget, 0, 63, 'Mirroring...')
-        for z in xrange(0, 64):
+        for z, layer in enumerate(self.layers):
             if progress.wasCanceled():
                 break
             progress.setValue(z)
-            layer = self.layers[z]
             layer.set_image(layer.mirrored(hor, ver))
         self.edit_widget.repaint()
         self.set_dirty()
@@ -857,11 +879,10 @@ class MapEditor(QtGui.QMainWindow):
         progress = progress_dialog(self.edit_widget, 0, 63, 'Rotating...')
         transform = QtGui.QTransform()
         transform.rotate(angle)
-        for z in xrange(0, 64):
+        for z, layer in enumerate(self.layers):
             if progress.wasCanceled():
                 break
             progress.setValue(z)
-            layer = self.layers[z]
             layer.set_image(layer.transformed(transform))
         self.edit_widget.repaint()
         self.set_dirty()
@@ -893,8 +914,8 @@ class MapEditor(QtGui.QMainWindow):
         self.set_dirty()
     
     def get_height(self, color):
-        return int(math.floor((float(QtGui.qRed(color)) + float(QtGui.qGreen(color)) + 
-                    float(QtGui.qBlue(color)))/12.0))
+        return int(math.floor((float(QtGui.qRed(color)) +
+            float(QtGui.qGreen(color)) + float(QtGui.qBlue(color))) / 12.0))
     
     def generate_heightmap(self, delete = False):
         h_name = QtGui.QFileDialog.getOpenFileName(self,
@@ -916,15 +937,16 @@ class MapEditor(QtGui.QMainWindow):
             if not delete:
                 color_lines.append(c_image.scanLine(y))
             for x in xrange(0,512):
-                height_values[y].append(self.get_height(struct.unpack('I', height_line[x * 4:x * 4 + 4])[0]))
-        progress = progress_dialog(self.edit_widget, 0, 63, 'Generating from heightmap...')
-        for z in xrange(0, 64):
+                height_values[y].append(self.get_height(
+                    struct.unpack('I', height_line[x * 4:x * 4 + 4])[0]))
+        progress = progress_dialog(self.edit_widget, 0, 63,
+            'Generating from heightmap...')
+        for z, image in enumerate(reversed(self.layers)):
             if progress.wasCanceled():
                 break
             progress.setValue(z)
             if z == 0 and delete:
                 continue
-            image = self.layers[63 - z]
             for y in xrange(0, 512):
                 image_line = image.scanLine(y)
                 if not delete:
@@ -949,10 +971,9 @@ class MapEditor(QtGui.QMainWindow):
             reply = QMessageBox.warning(self, self.app.applicationName(), text,
                 QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
                 QMessageBox.Yes)
-            if reply == QMessageBox.Yes:
-                if not self.save_selected():
-                    return
-            elif reply == QMessageBox.Cancel:
+            if reply == QMessageBox.Cancel:
+                return
+            elif reply == QMessageBox.Yes and not self.save_selected():
                 return
         self.app.exit()
 
