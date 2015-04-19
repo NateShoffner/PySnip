@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PySnip by NateShoffner</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>PySnip</h1>
+        <p>PySnip is a robust, open-source and cross-platform server implementation for Ace of Spades. It is fully customizable with extensions and scripts.</p>
+
+        <p class="view"><a href="https://github.com/NateShoffner/PySnip">View the Project on GitHub <small>NateShoffner/PySnip</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/NateShoffner/PySnip/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/NateShoffner/PySnip/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/NateShoffner/PySnip">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><img src="http://i.imgur.com/QFgqcRM.png" alt="PySnip"></p>
+
+<p><a href="https://travis-ci.org/NateShoffner/PySnip"><img src="https://travis-ci.org/NateShoffner/PySnip.svg?branch=master" alt="Build Status"></a></p>
+
+<p>PySnip is an robust, open-source and cross-platform server implementation for <a href="http://buildandshoot.com">Ace of Spades</a>. It is fully customizable with extensions and scripts.</p>
+
+<h3>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h3>
+
+<ul>
+<li>Many administrator features</li>
+<li>A lot of epic commands</li>
+<li>A remote console (using SSH)</li>
+<li>Map rotation</li>
+<li>Map metadata (name, version, author, and map configuration)</li>
+<li>Map extensions (water damage, etc.)</li>
+<li>A map generator</li>
+<li>An IRC client for managing your server</li>
+<li>A JSON query webserver</li>
+<li>A status server with map overview</li>
+<li>Server/map scripts</li>
+<li>Airstrikes</li>
+<li>Melee attacks with the pickaxe</li>
+<li>New gamemodes (deathmatch / runningman)</li>
+<li>Rollback feature (rolling back to the original map)</li>
+<li>Spectator mode</li>
+<li>Dirt grenades</li>
+<li>Platforms with buttons</li>
+<li>Ban subscribe service</li>
+<li>A ton of other features </li>
+</ul>
+
+<h3>
+<a id="installing" class="anchor" href="#installing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing</h3>
+
+<h4>
+<a id="for-windows" class="anchor" href="#for-windows" aria-hidden="true"><span class="octicon octicon-link"></span></a>For windows</h4>
+
+<p>Go to <a href="https://github.com/NateShoffner/PySnip/releases">releases</a> and download desired version.</p>
+
+<h4>
+<a id="for-linux" class="anchor" href="#for-linux" aria-hidden="true"><span class="octicon octicon-link"></span></a>For linux</h4>
+
+<p>Grab it from repo.</p>
+
+<div class="highlight highlight-bash"><pre>git clone https://github.com/NateShoffner/PySnip
+<span class="pl-c1">cd</span> PySnip</pre></div>
+
+<p>Create virtualenv</p>
+
+<div class="highlight highlight-bash"><pre>virtualenv -p python2 venv
+<span class="pl-c1">source</span> ./venv/bin/activate</pre></div>
+
+<p>Install dependencies</p>
+
+<div class="highlight highlight-bash"><pre>pip install cython twisted jinja2 pillow pygeoip pycrypto pyasn1</pre></div>
+
+<p>Compile</p>
+
+<div class="highlight highlight-bash"><pre>./build.sh</pre></div>
+
+<p>Run</p>
+
+<div class="highlight highlight-bash"><pre>./run_server.sh</pre></div>
+
+<h3>
+<a id="support" class="anchor" href="#support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support</h3>
+
+<p>Feel free to post a question on the <a href="http://buildandshoot.com/viewforum.php?f=19">forums</a> if you need any help or hop onto <a href="http://webchat.quakenet.org/?channels=%23buildandshoot">IRC</a> to to chat.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/NateShoffner">NateShoffner</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
