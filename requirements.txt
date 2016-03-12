@@ -1,0 +1,7 @@
+cython   
+twisted  
+jinja2   
+pillow   
+pygeoip  
+pycrypto 
+pyasn1   

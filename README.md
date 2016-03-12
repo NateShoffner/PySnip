@@ -1,6 +1,8 @@
 
 # About this fork #
 
+[![Build Status](https://travis-ci.org/swalladge/PySnip.svg?branch=master)](https://travis-ci.org/swalladge/PySnip)
+
 This fork has been created with the aim to complete the following:
 
 - separate server from configs/maps/scripts/etc (at the moment it's all combined, and messy)
