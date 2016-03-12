@@ -24,10 +24,11 @@ enet/build/
 venv/
 
 # feature server
-feature_server/logs/
 feature_server/data/
-feature_server/config.txt
-feature_server/maps/*.txtc
+
+# config/userdata
+configs/maps/*.txtc
+configs/logs/
 
 # py2exe
 py2exe/dist/

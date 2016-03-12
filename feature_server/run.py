@@ -33,12 +33,12 @@ import argparse
 arg_parser = argparse.ArgumentParser(prog="pysnip",
                                      description="PySnip is an open-source Python server implementation for the voxel-based game \"Ace of Spades\".")
 
-arg_parser.add_argument("-c","--config-file", default="config.txt", 
-        help="Specify alternate config file (default is feature_server/config.txt).")
+arg_parser.add_argument("-c","--config-file", default="config.json", 
+        help="Specify alternate config file relative to config dir.")
 arg_parser.add_argument("-j","--json-parameters", 
         help="Add extra json parameters, overwriting that in config file.")
-arg_parser.add_argument("-r","--resource-dir", default=".",
-        help="The directory which contains maps,scripts,etc (in correctly named subdirs). - default is in directory of run.py, in feature_server.")
+arg_parser.add_argument("-d","--config-dir", default=os.path.join(os.path.expanduser("~"), ".pysnip"),
+        help="The directory which contains maps,scripts,etc (in correctly named subdirs). - default is ~/.pysnip/.")
 
 args = arg_parser.parse_args()
 
@@ -49,10 +49,14 @@ def choose_path(base,top):
         return os.path.join(base,top)
     return top
 
-# ok, so we use the resource directory to search for maps, etc. (alternative to the feature_server dir)
-RESOURCE_DIR = args.resource_dir
+# ok, so we use the resource directory to search for maps, etc.
+config_dir = args.config_dir
+
+# add it to the path so we can import scripts
+sys.path.append(config_dir)
+
 # fix the path for the config file - handles differering directories and relative or absolute paths
-CONFIG_FILE = choose_path(RESOURCE_DIR,args.config_file)
+config_file = choose_path(config_dir,args.config_file)
 
 # default passwords hardcoded in config
 DEFAULT_PASSWORDS = {
@@ -62,17 +66,13 @@ DEFAULT_PASSWORDS = {
     'trusted' : ['trustedpass']
 }
 
-for index, name in enumerate((CONFIG_FILE, 'config.txt.default')):
-    try:
-        config = json.load(open(name, 'rb'))
-        if index != 0:
-            print '(creating config.txt from %s)' % name
-            shutil.copy(name, CONFIG_FILE)
-        break
-    except IOError, e:
-        pass
-else:
-    raise SystemExit('no config file found')
+try:
+    with open(config_file, 'rb') as f:
+        config = json.load(f)
+except IOError as e:
+    print(config_file)
+    print("Error reading config: ", e)
+    sys.exit(1)
 
 # update with parameters from args
 if args.json_parameters:
@@ -589,7 +589,7 @@ class FeatureProtocol(ServerProtocol):
         self.win_count = itertools.count(1)
         self.bans = NetworkDict()
         try:
-            self.bans.read_list(json.load(open(os.path.join(RESOURCE_DIR,'bans.txt'), 'rb')))
+            self.bans.read_list(json.load(open(os.path.join(config_dir,'bans.txt'), 'rb')))
         except IOError:
             pass
         self.hard_bans = set() # possible DDoS'ers are added here
@@ -640,7 +640,7 @@ class FeatureProtocol(ServerProtocol):
         self.set_god_build = config.get('set_god_build', False)
         self.debug_log = config.get('debug_log', False)
         if self.debug_log:
-            pyspades.debug.open_debug_log(os.path.join(RESOURCE_DIR,'debug.log'))
+            pyspades.debug.open_debug_log(os.path.join(config_dir,'debug.log'))
         ssh = config.get('ssh', {})
         if ssh.get('enabled', False):
             from ssh import RemoteConsole
@@ -661,9 +661,10 @@ class FeatureProtocol(ServerProtocol):
         if ban_subscribe.get('enabled', True):
             import bansubscribe
             self.ban_manager = bansubscribe.BanManager(self, ban_subscribe)
+
         # logfile location in resource dir if not abs path given
-        logfile = choose_path(RESOURCE_DIR,config.get('logfile', None))
-        if logfile is not None and logfile.strip():
+        logfile = choose_path(config_dir,config.get('logfile', ''))
+        if logfile.strip(): # catches empty filename 
             if config.get('rotate_daily', False):
                 create_filename_path(logfile)
                 logging_file = DailyLogFile(logfile, '.')
@@ -791,11 +792,11 @@ class FeatureProtocol(ServerProtocol):
         return True
     
     def get_map(self, rot_info):
-        return Map(rot_info, os.path.join(RESOURCE_DIR,'maps'))
+        return Map(rot_info, os.path.join(config_dir,'maps'))
     
     def set_map_rotation(self, maps, now = True):
         try:
-            maps = check_rotation(maps, os.path.join(RESOURCE_DIR,'maps'))
+            maps = check_rotation(maps, os.path.join(config_dir,'maps'))
         except MapNotFound, e:
             return e
         self.maps = maps
@@ -917,7 +918,7 @@ class FeatureProtocol(ServerProtocol):
         return result
     
     def save_bans(self):
-        json.dump(self.bans.make_list(), open_create(os.path.join(RESOURCE_DIR,'bans.txt'), 'wb'))
+        json.dump(self.bans.make_list(), open_create(os.path.join(config_dir,'bans.txt'), 'wb'))
         if self.ban_publish is not None:
             self.ban_publish.update()
     
@@ -1051,10 +1052,6 @@ if game_mode not in ('ctf', 'tc'):
     script_names.append(game_mode)
 
 
-# temporarily allow loading from the scripts folder in the resource directory
-ORIG_PATH = sys.path
-sys.path = [RESOURCE_DIR] + ORIG_PATH
-
 for script in script_names[:]:
     try:
         module = __import__('scripts.%s' % script, globals(), locals(), 
@@ -1063,9 +1060,6 @@ for script in script_names[:]:
     except ImportError, e:
         print "(script '%s' not found: %r)" % (script, e)
         script_names.remove(script)
-
-# change back to original path
-sys.path = ORIG_PATH
 
 
 for script in script_objects:
