@@ -23,7 +23,7 @@
     "rules" : [
         "Cheating isn't welcome. Griefing is frowned upon. Have fun!"
     ],
-    "master" : true,
+    "master" : false,
     "max_players" : 32,
     "max_connections_per_ip" : 3,
     "port" : 32887,
@@ -96,9 +96,9 @@
         }
     },
     "status_server" : {
-        "enabled" : false,
+        "enabled" : true,
         "port" : 32886,
-        "logging" : false
+        "logging" : true
     },
     "ban_publish" : {
         "enabled" : false,
