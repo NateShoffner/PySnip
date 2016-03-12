@@ -30,6 +30,8 @@ from collections import deque
 
 import argparse
 
+import cfg
+
 arg_parser = argparse.ArgumentParser(prog="pysnip",
                                      description="PySnip is an open-source Python server implementation for the voxel-based game \"Ace of Spades\".")
 
@@ -51,12 +53,14 @@ def choose_path(base,top):
 
 # ok, so we use the resource directory to search for maps, etc.
 config_dir = args.config_dir
+cfg.config_dir = config_dir
 
 # add it to the path so we can import scripts
 sys.path.append(config_dir)
 
 # fix the path for the config file - handles differering directories and relative or absolute paths
 config_file = choose_path(config_dir,args.config_file)
+cfg.config_file = config_file
 
 # default passwords hardcoded in config
 DEFAULT_PASSWORDS = {
@@ -69,6 +73,7 @@ DEFAULT_PASSWORDS = {
 try:
     with open(config_file, 'rb') as f:
         config = json.load(f)
+        cfg.config = config
 except IOError as e:
     print(config_file)
     print("Error reading config: ", e)
