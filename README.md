@@ -5,8 +5,7 @@
 
 This fork (original project at [NateSchoffner/PySnip](https://github.com/NateShoffner/PySnip)) has been created with the aim to complete the following:
 
-- separate server from configs/maps/scripts/etc (at the moment it's all combined, and messy)
-- force all config/maps/logs/scripts to be loaded from a single configs directory (default ~/.pysnip/)
+- [DONE] separate server from configs/maps/scripts/etc (at the moment it's all combined, and messy)
 - make it installable via pip or a linux package manager
 - port to python3
 - keep up to date and fix any bugs (please send pull requests!)

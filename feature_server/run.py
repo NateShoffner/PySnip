@@ -36,11 +36,11 @@ arg_parser = argparse.ArgumentParser(prog="pysnip",
                                      description="PySnip is an open-source Python server implementation for the voxel-based game \"Ace of Spades\".")
 
 arg_parser.add_argument("-c","--config-file", default="config.json", 
-        help="Specify alternate config file relative to config dir.")
+        help="specify alternate config file (relative to config dir if relative path)")
 arg_parser.add_argument("-j","--json-parameters", 
-        help="Add extra json parameters, overwriting that in config file.")
+        help="add extra json parameters, overwriting that in config file")
 arg_parser.add_argument("-d","--config-dir", default=os.path.join(os.path.expanduser("~"), ".pysnip"),
-        help="The directory which contains maps,scripts,etc (in correctly named subdirs). - default is ~/.pysnip/.")
+        help="he directory which contains maps,scripts,etc (in correctly named subdirs) - default is ~/.pysnip/")
 
 args = arg_parser.parse_args()
 
@@ -75,9 +75,12 @@ try:
         config = json.load(f)
         cfg.config = config
 except IOError as e:
-    print(config_file)
-    print("Error reading config: ", e)
+    print("Error reading config from {}: ".format(config_file) + str(e))
     sys.exit(1)
+except ValueError as e:
+    print("Error in config file {}: ".format(config_file) + str(e))
+    sys.exit(1)
+
 
 # update with parameters from args
 if args.json_parameters:
