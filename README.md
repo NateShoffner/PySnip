@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/swalladge/PySnip.svg?branch=master)](https://travis-ci.org/swalladge/PySnip)
 
-This fork has been created with the aim to complete the following:
+This fork (original project at [NateSchoffner/PySnip](https://github.com/NateShoffner/PySnip)) has been created with the aim to complete the following:
 
 - separate server from configs/maps/scripts/etc (at the moment it's all combined, and messy)
 - force all config/maps/logs/scripts to be loaded from a single configs directory (default ~/.pysnip/)
@@ -12,6 +12,18 @@ This fork has been created with the aim to complete the following:
 - keep up to date and fix any bugs (please send pull requests!)
 - provide some more documentation on how to instal, run, and configure the server
 
+
+## FAQs
+
+### `('from' command disabled - missing data/GeoLiteCity.dat)` in server log
+
+You need to download a `GeoLiteCity.dat` into the data directory in your config directory.
+
+A script is included to help - Just run the following:
+```
+cd ~/.pysnip/
+/path/to/pysnip/feature_server/update_geoip.py
+```
 
 # Original README below #
 
