@@ -1,6 +1,18 @@
-![PySnip](http://i.imgur.com/QFgqcRM.png)
 
-[![Build Status](https://travis-ci.org/NateShoffner/PySnip.svg?branch=master)](https://travis-ci.org/NateShoffner/PySnip)
+# About this fork #
+
+This fork has been created with the aim to complete the following:
+
+- separate server from configs/maps/scripts/etc (at the moment it's all combined, and messy)
+- force all config/maps/logs/scripts to be loaded from a single configs directory (default ~/.pysnip/)
+- make it installable via pip or a linux package manager
+- port to python3
+- keep up to date and fix any bugs (please send pull requests!)
+
+
+# Original README below #
+
+![PySnip](http://i.imgur.com/QFgqcRM.png)
 
 PySnip is an robust, open-source and cross-platform server implementation for [Ace of Spades](http://buildandshoot.com). It is fully customizable with extensions and scripts.
 
