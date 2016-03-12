@@ -8,6 +8,7 @@ This fork has been created with the aim to complete the following:
 - make it installable via pip or a linux package manager
 - port to python3
 - keep up to date and fix any bugs (please send pull requests!)
+- provide some more documentation on how to instal, run, and configure the server
 
 
 # Original README below #
