@@ -1,32 +1,6 @@
-
-# About this fork #
-
-[![Build Status](https://travis-ci.org/swalladge/PySnip.svg?branch=master)](https://travis-ci.org/swalladge/PySnip)
-
-This fork (original project at [NateSchoffner/PySnip](https://github.com/NateShoffner/PySnip)) has been created with the aim to complete the following:
-
-- [DONE] separate server from configs/maps/scripts/etc (at the moment it's all combined, and messy)
-- make it installable via pip or a linux package manager
-- port to python3
-- keep up to date and fix any bugs (please send pull requests!)
-- provide some more documentation on how to instal, run, and configure the server
-
-
-## FAQs
-
-### `('from' command disabled - missing data/GeoLiteCity.dat)` in server log
-
-You need to download a `GeoLiteCity.dat` into the data directory in your config directory.
-
-A script is included to help - Just run the following:
-```
-cd ~/.pysnip/
-/path/to/pysnip/feature_server/update_geoip.py
-```
-
-# Original README below #
-
 ![PySnip](http://i.imgur.com/QFgqcRM.png)
+
+[![Build Status](https://travis-ci.org/NateShoffner/PySnip.svg?branch=master)](https://travis-ci.org/NateShoffner/PySnip)
 
 PySnip is an robust, open-source and cross-platform server implementation for [Ace of Spades](http://buildandshoot.com). It is fully customizable with extensions and scripts.
 
@@ -51,7 +25,7 @@ PySnip is an robust, open-source and cross-platform server implementation for [A
 * Dirt grenades
 * Platforms with buttons
 * Ban subscribe service
-* A ton of other features 
+* A ton of other features
 
 ### Installing ###
 #### For windows ####
@@ -79,6 +53,20 @@ Compile
 Run
 ```bash
 ./run_server.sh
+```
+
+### FAQs
+
+#### GeoLiteCity.dat error
+
+If you get the error: `('from' command disabled - missing data/GeoLiteCity.dat)` in the server log, you will need to
+download a `GeoLiteCity.dat` file into the data directory in your config directory.
+
+A script is included to automate this - run the following:
+
+```
+cd ~/.pysnip/
+/path/to/pysnip/feature_server/update_geoip.py
 ```
 
 ### Support ###
