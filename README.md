@@ -71,4 +71,4 @@ cd ~/.pysnip/
 
 ### Support ###
 
-Feel free to post a question on the [forums](http://buildandshoot.com/viewforum.php?f=19) if you need any help or hop onto [IRC](http://webchat.quakenet.org/?channels=%23buildandshoot) to to chat.
+Feel free to post a question on the [forums](http://buildandshoot.com/viewforum.php?f=19) if you need any help or hop onto [IRC](http://webchat.quakenet.org/?channels=%23buildandshoot) to chat.
