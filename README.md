@@ -25,7 +25,7 @@ PySnip is an robust, open-source and cross-platform server implementation for [A
 * Dirt grenades
 * Platforms with buttons
 * Ban subscribe service
-* A ton of other features 
+* A ton of other features
 
 ### Installing ###
 #### For windows ####
@@ -55,6 +55,20 @@ Run
 ./run_server.sh
 ```
 
+### FAQs
+
+#### GeoLiteCity.dat error
+
+If you get the error: `('from' command disabled - missing data/GeoLiteCity.dat)` in the server log, you will need to
+download a `GeoLiteCity.dat` file into the data directory in your config directory.
+
+A script is included to automate this - run the following:
+
+```
+cd ~/.pysnip/
+/path/to/pysnip/feature_server/update_geoip.py
+```
+
 ### Support ###
 
-Feel free to post a question on the [forums](http://buildandshoot.com/viewforum.php?f=19) if you need any help or hop onto [IRC](http://webchat.quakenet.org/?channels=%23buildandshoot) to to chat.
+Feel free to post a question on the [forums](http://buildandshoot.com/viewforum.php?f=19) if you need any help or hop onto [IRC](http://webchat.quakenet.org/?channels=%23buildandshoot) to chat.
