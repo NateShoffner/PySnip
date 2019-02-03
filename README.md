@@ -1,3 +1,7 @@
+# NOTE:
+
+Pysnip is no longer being maintained. For a currently maintained fork of PySnip, see https://github.com/piqueserver/piqueserver.
+
 ![PySnip](http://i.imgur.com/QFgqcRM.png)
 
 [![Build Status](https://travis-ci.org/NateShoffner/PySnip.svg?branch=master)](https://travis-ci.org/NateShoffner/PySnip)
